@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 public enum TrayManager {
     Instance;
@@ -35,7 +36,7 @@ public enum TrayManager {
             private void maybeShowPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     JPopupMenu popupMenu = getPopupMenu();
-                    popupMenu.setLocation(e.getX(), e.getY());
+                    popupMenu.setLocation(e.getX() - popupMenu.getWidth(), e.getY() - popupMenu.getHeight());
                     popupMenu.setInvoker(getHideDialog());
                     popupMenu.setVisible(true);
                 }
@@ -80,8 +81,29 @@ public enum TrayManager {
 
             popupMenu.addSeparator();
 
-            // 测试按钮
-            JMenuItem testMenuItem = new JMenuItem("test");
+
+            // 系统工具
+            {
+                String[] systemTools = new String[]{
+                        "截图工具", "SnippingTool",
+                        "远程连接", "mstsc"
+                };
+                JMenu systemMenu = new JMenu("系统工具");
+                popupMenu.add(systemMenu);
+
+                for (int i = 0; i < systemTools.length; i += 2) {
+                    JMenuItem menuItem = new JMenuItem(systemTools[i]);
+                    String name = systemTools[i + 1];
+                    menuItem.addActionListener(e -> {
+                        try {
+                            Runtime.getRuntime().exec(name);
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                    });
+                    systemMenu.add(menuItem);
+                }
+            }
 
             // 退出按钮
             JMenuItem exitMenuItem = new JMenuItem(Res.STR_EXIT);
@@ -89,7 +111,6 @@ public enum TrayManager {
                 System.exit(0);
             });
 
-            popupMenu.add(testMenuItem);
             popupMenu.add(exitMenuItem);
         }
         return popupMenu;

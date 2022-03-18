@@ -5,6 +5,7 @@ import com.backinfile.toolBox.actor.Pet;
 import com.backinfile.toolBox.tray.TrayManager;
 
 import javax.swing.*;
+import java.util.Properties;
 
 public class DesktopLauncher {
 
@@ -18,6 +19,11 @@ public class DesktopLauncher {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Properties properties = System.getProperties();
+
+        // 本地数据
+        LocalData.load();
 
         // 显示宠物
         new Pet();

@@ -1,5 +1,6 @@
 package com.backinfile.toolBox.actor;
 
+import com.backinfile.toolBox.LocalData;
 import com.backinfile.toolBox.Res;
 import com.backinfile.toolBox.Utils;
 
@@ -25,9 +26,16 @@ public class Pet extends JDialog implements ActionListener {
 
     public Pet() {
         instance = this;
-        setSize(Res.CUBE_SIZE, Res.CUBE_SIZE);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation(screenSize.width / 2, screenSize.height / 2);
+
+        setSize(Res.CUBE_SIZE, Res.CUBE_SIZE);
+
+        if (LocalData.instance().locationX >= 0) {
+            setLocationAlign(LocalData.instance().locationX, LocalData.instance().locationY);
+        } else {
+            setLocationAlign(screenSize.width / 2, screenSize.height / 2);
+        }
+
         setUndecorated(true);
         setBackground(new Color(0, 0, 0, 0));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -41,7 +49,9 @@ public class Pet extends JDialog implements ActionListener {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                setLocationAlign(e.getXOnScreen(), e.getYOnScreen());
+                int x = e.getXOnScreen();
+                int y = e.getYOnScreen();
+                setLocationAlign(x, y);
             }
         });
 
@@ -58,6 +68,10 @@ public class Pet extends JDialog implements ActionListener {
 
     public void setLocationAlign(int x, int y) {
         setLocation(x - getWidth() / 2, y - getHeight() / 2);
+
+        LocalData.instance().locationX = x;
+        LocalData.instance().locationY = y;
+        LocalData.instance().saveLater();
     }
 
     private boolean updateEyeOffset() {

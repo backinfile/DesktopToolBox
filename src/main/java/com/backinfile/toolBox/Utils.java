@@ -3,7 +3,8 @@ package com.backinfile.toolBox;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Utils {
     public static Point sub(Point a, Point b) {
@@ -32,5 +33,31 @@ public class Utils {
             return 0;
         }
         return absValue * signumValue / maxDistance;
+    }
+
+    public static String readAllFileText(File file) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                sb.append(line);
+                sb.append('\n');
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            Log.res.error("", e);
+            return "";
+        }
+    }
+
+    public static void writeFile(File file, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false)))) {
+            writer.write(content);
+        } catch (Exception e) {
+            Log.res.error("", e);
+        }
     }
 }
