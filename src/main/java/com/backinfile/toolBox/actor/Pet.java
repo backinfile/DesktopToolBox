@@ -2,7 +2,7 @@ package com.backinfile.toolBox.actor;
 
 import com.backinfile.toolBox.LocalData;
 import com.backinfile.toolBox.Res;
-import com.backinfile.toolBox.Utils;
+import com.backinfile.toolBox.Utils2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,17 +23,21 @@ public class Pet extends JDialog implements ActionListener {
     public float eyeOffsetY = 0;
 
     private final float eyeOffsetDistance;
+    private final int move_edge_left = Res.CUBE_SIZE / 2;
+    private final int move_edge_right = Res.SCREEN_SIZE.width - Res.CUBE_SIZE / 2;
+    private final int move_edge_top = Res.CUBE_SIZE / 2;
+    private final int move_edge_bottom = Res.SCREEN_SIZE.height - Res.CUBE_SIZE / 2;
 
     public Pet() {
         instance = this;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         setSize(Res.CUBE_SIZE, Res.CUBE_SIZE);
 
+        // 加载时读取上一次位置信息
         if (LocalData.instance().locationX >= 0) {
             setLocationAlign(LocalData.instance().locationX, LocalData.instance().locationY);
         } else {
-            setLocationAlign(screenSize.width / 2, screenSize.height / 2);
+            setLocationAlign(Res.SCREEN_SIZE.width / 2, Res.SCREEN_SIZE.height / 2);
         }
 
         setUndecorated(true);
@@ -43,7 +47,7 @@ public class Pet extends JDialog implements ActionListener {
         setAlwaysOnTop(true);
         setVisible(true);
 
-        eyeOffsetDistance = screenSize.height / 2f;
+        eyeOffsetDistance = Res.SCREEN_SIZE.height / 2f;
 
 
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -51,7 +55,7 @@ public class Pet extends JDialog implements ActionListener {
             public void mouseDragged(MouseEvent e) {
                 int x = e.getXOnScreen();
                 int y = e.getYOnScreen();
-                setLocationAlign(x, y);
+                setLocationAlign(Utils2.clamp(x, move_edge_left, move_edge_right), Utils2.clamp(y, move_edge_top, move_edge_bottom));
             }
         });
 
@@ -80,8 +84,8 @@ public class Pet extends JDialog implements ActionListener {
 
         float oldEyeOffsetX = eyeOffsetX;
         float oldEyeOffsetY = eyeOffsetY;
-        eyeOffsetX = Utils.invLerp(location.x, mouseLocation.x, eyeOffsetDistance);
-        eyeOffsetY = Utils.invLerp(location.y, mouseLocation.y, eyeOffsetDistance);
+        eyeOffsetX = Utils2.getClampRate(location.x, mouseLocation.x, eyeOffsetDistance);
+        eyeOffsetY = Utils2.getClampRate(location.y, mouseLocation.y, eyeOffsetDistance);
 
         if (Math.abs(oldEyeOffsetX - eyeOffsetX) + Math.abs(oldEyeOffsetY - eyeOffsetY) >= 0.01f) {
 //            Log.game.info("mouse {} location: {}", mouseLocation.toString(), location.toString());

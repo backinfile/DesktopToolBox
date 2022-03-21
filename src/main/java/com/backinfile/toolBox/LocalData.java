@@ -10,7 +10,7 @@ import java.io.File;
 
 public class LocalData {
     private static LocalData localData = null;
-    private static final String LOCAL_DATA_PATH = "\\DesktopToolBox\\save.json";
+    private static final String LOCAL_DATA_PATH = "\\" + Res.PROJ_NAME + "\\save.json";
 
     public static LocalData instance() {
         if (localData == null) {
@@ -23,7 +23,7 @@ public class LocalData {
     public int locationX = -1;
     public int locationY = -1;
 
-    
+
     // 其他数据
     @JSONField(serialize = false, deserialize = false)
     private long saveDataTimer = 0;
@@ -31,7 +31,7 @@ public class LocalData {
     public static void load() {
         File file = getLocalSaveFile();
         if (file.exists()) {
-            localData = (LocalData) JSON.parseObject(Utils.readAllFileText(file), LocalData.class);
+            localData = (LocalData) JSON.parseObject(Utils2.readAllFileText(file), LocalData.class);
             if (localData != null) {
                 Log.res.info("read local data");
             }
@@ -63,7 +63,7 @@ public class LocalData {
 
     public void save() {
         File file = getLocalSaveFile();
-        Utils.writeFile(file, JSON.toJSONString(this));
+        Utils2.writeFile(file, JSON.toJSONString(this));
         Log.res.info("save local data");
     }
 

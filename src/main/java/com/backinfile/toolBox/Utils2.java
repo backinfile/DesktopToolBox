@@ -6,14 +6,14 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class Utils {
+public class Utils2 {
     public static Point sub(Point a, Point b) {
         return new Point(a.x - b.x, a.y - b.y);
     }
 
     public static Image loadImage(String path) {
         try {
-            InputStream stream = Utils.class.getClassLoader().getResourceAsStream(path);
+            InputStream stream = Utils2.class.getClassLoader().getResourceAsStream(path);
             BufferedImage image = ImageIO.read(stream);
             return image;
         } catch (Exception e) {
@@ -22,7 +22,7 @@ public class Utils {
         return null;
     }
 
-    public static float invLerp(float ori, float target, float maxDistance) {
+    public static float getClampRate(float ori, float target, float maxDistance) {
         float subValue = target - ori;
         float absValue = Math.abs(subValue);
         float signumValue = Math.signum(subValue);
@@ -60,4 +60,36 @@ public class Utils {
             Log.res.error("", e);
         }
     }
+
+
+    static public short clamp(short value, short min, short max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static public int clamp(int value, int min, int max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static public long clamp(long value, long min, long max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static public float clamp(float value, float min, float max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
+    static public double clamp(double value, double min, double max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
+    }
+
 }

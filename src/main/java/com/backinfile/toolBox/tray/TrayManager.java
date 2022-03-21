@@ -69,13 +69,12 @@ public enum TrayManager {
 
             // 控制宠物
             {
-                ImageIcon icon = new ImageIcon(Res.IMG_Check);
-                JMenuItem item = new JMenuItem("移动到屏幕中央", icon);
-                item.setIcon(null);
+                JCheckBoxMenuItem item = new JCheckBoxMenuItem("移动到屏幕中央");
                 item.addActionListener(e -> {
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                     Pet.getInstance().setLocationAlign(screenSize.width / 2, screenSize.height / 2);
                 });
+                item.setState(true);
                 popupMenu.add(item);
             }
 
@@ -85,8 +84,9 @@ public enum TrayManager {
             // 系统工具
             {
                 String[] systemTools = new String[]{
+                        "计算器", "calc",
+                        "远程连接", "mstsc",
                         "截图工具", "SnippingTool",
-                        "远程连接", "mstsc"
                 };
                 JMenu systemMenu = new JMenu("系统工具");
                 popupMenu.add(systemMenu);
