@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.backinfile'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 repositories {
     mavenLocal()
@@ -15,12 +15,35 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.2'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.2'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.0'
-    implementation 'com.github.backinfile:support:v1.0.2'
-    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.78'
+    compile 'com.github.backinfile:support:v1.0.2'
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.78'
 }
 test {
     useJUnitPlatform()
+}
+
+jar {
+    metadataCharset 'utf-8'
+    String classPaths = ''
+    configurations.runtime.each { classPaths = classPaths + " lib\\" + it.name } //遍历项目的所有依赖的jar包赋值给变量someString
+
+
+    manifest {
+        attributes "Main-Class": "com.backinfile.toolBox.DesktopLauncher"
+        attributes 'Class-Path': classPaths
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task copyJar(type: Copy) {
+    from configurations.runtime into('build/libs/lib')
+}
+
+task release(type: Copy, dependsOn: [build, copyJar]) {
 }

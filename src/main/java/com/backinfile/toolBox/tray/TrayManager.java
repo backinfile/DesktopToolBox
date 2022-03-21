@@ -45,14 +45,6 @@ public enum TrayManager {
                     Pet.getInstance().shake();
                 }
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            private void maybeShowPopup(MouseEvent e) {
-            }
         });
         try {
             tray.add(trayIcon);
@@ -64,11 +56,13 @@ public enum TrayManager {
     public void wink(boolean wink) {
         winking = wink;
 
-        if (winkTimer == null) {
+        if (winking && winkTimer == null) {
             boolean[] winkData = new boolean[]{false};
             winkTimer = new Timer((int) Time2.SEC / 2, e -> {
                 if (!winking) {
                     trayIcon.setImage(Res.IMG_ICON);
+                    winkTimer.stop();
+                    winkTimer = null;
                     return;
                 }
 
