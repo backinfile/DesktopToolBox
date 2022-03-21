@@ -1,5 +1,7 @@
 package com.backinfile.toolBox.tray;
 
+import com.backinfile.support.Time2;
+import com.backinfile.toolBox.LocalData;
 import com.backinfile.toolBox.Log;
 import com.backinfile.toolBox.Res;
 import com.backinfile.toolBox.actor.Pet;
@@ -14,18 +16,34 @@ public enum TrayManager {
     Instance;
 
     private JDialog hideDialog = null;
+    private TrayIcon trayIcon = null;
+
+    private Timer winkTimer = null;
+    private boolean winking = false;
+
+
     private JPopupMenu popupMenu = null;
+    private JCheckBoxMenuItem showPetMenu = null;
 
     public void show() {
         Log.game.info("show Tray");
 
         SystemTray tray = SystemTray.getSystemTray();
-        TrayIcon trayIcon = new TrayIcon(Res.IMG_ICON, Res.STR_PROJ_NAME);
+        trayIcon = new TrayIcon(Res.IMG_ICON, Res.STR_PROJ_NAME);
         trayIcon.setImageAutoSize(true);
         trayIcon.addMouseListener(new MouseInputAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
+                if (e.isPopupTrigger()) {
+                    JPopupMenu popupMenu = getPopupMenu();
+                    popupMenu.setLocation(e.getX() - popupMenu.getWidth(), e.getY() - popupMenu.getHeight());
+                    popupMenu.setInvoker(getHideDialog());
+                    popupMenu.setVisible(true);
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    Pet.getInstance().shake();
+                }
             }
 
             @Override
@@ -34,18 +52,30 @@ public enum TrayManager {
             }
 
             private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    JPopupMenu popupMenu = getPopupMenu();
-                    popupMenu.setLocation(e.getX() - popupMenu.getWidth(), e.getY() - popupMenu.getHeight());
-                    popupMenu.setInvoker(getHideDialog());
-                    popupMenu.setVisible(true);
-                }
             }
         });
         try {
             tray.add(trayIcon);
         } catch (AWTException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void wink(boolean wink) {
+        winking = wink;
+
+        if (winkTimer == null) {
+            boolean[] winkData = new boolean[]{false};
+            winkTimer = new Timer((int) Time2.SEC / 2, e -> {
+                if (!winking) {
+                    trayIcon.setImage(Res.IMG_ICON);
+                    return;
+                }
+
+                trayIcon.setImage(winkData[0] ? Res.IMG_ICON : Res.IMG_EMPTY);
+                winkData[0] = !winkData[0];
+            });
+            winkTimer.start();
         }
     }
 
@@ -69,41 +99,54 @@ public enum TrayManager {
 
             // 控制宠物
             {
-                JCheckBoxMenuItem item = new JCheckBoxMenuItem("移动到屏幕中央");
-                item.addActionListener(e -> {
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    Pet.getInstance().setLocationAlign(screenSize.width / 2, screenSize.height / 2);
-                });
-                item.setState(true);
-                popupMenu.add(item);
+                // 控制显示
+                {
+                    showPetMenu = new JCheckBoxMenuItem("显示宠物");
+                    showPetMenu.addActionListener(e -> {
+                        Pet.getInstance().setPetVisibleState(!LocalData.instance().showPet);
+                    });
+                    popupMenu.add(showPetMenu);
+                }
+                // 移动
+                {
+                    JMenuItem item = new JMenuItem("移动到屏幕中央");
+                    item.addActionListener(e -> {
+                        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                        Pet.getInstance().setLocationAlignCenter(screenSize.width / 2, screenSize.height / 2);
+                    });
+                    popupMenu.add(item);
+                }
+                popupMenu.addSeparator();
             }
 
-            popupMenu.addSeparator();
 
-
-            // 系统工具
+            // 工具
             {
-                String[] systemTools = new String[]{
-                        "计算器", "calc",
-                        "远程连接", "mstsc",
-                        "截图工具", "SnippingTool",
-                };
-                JMenu systemMenu = new JMenu("系统工具");
-                popupMenu.add(systemMenu);
+                // 系统工具
+                {
+                    String[] systemTools = new String[]{
+                            "计算器", "calc",
+                            "远程连接", "mstsc",
+                            "截图工具", "SnippingTool",
+                    };
+                    JMenu systemMenu = new JMenu("系统工具");
+                    popupMenu.add(systemMenu);
 
-                for (int i = 0; i < systemTools.length; i += 2) {
-                    JMenuItem menuItem = new JMenuItem(systemTools[i]);
-                    String name = systemTools[i + 1];
-                    menuItem.addActionListener(e -> {
-                        try {
-                            Runtime.getRuntime().exec(name);
-                        } catch (IOException ioException) {
-                            ioException.printStackTrace();
-                        }
-                    });
-                    systemMenu.add(menuItem);
+                    for (int i = 0; i < systemTools.length; i += 2) {
+                        JMenuItem menuItem = new JMenuItem(systemTools[i]);
+                        String name = systemTools[i + 1];
+                        menuItem.addActionListener(e -> {
+                            try {
+                                Runtime.getRuntime().exec(name);
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                            }
+                        });
+                        systemMenu.add(menuItem);
+                    }
                 }
             }
+            popupMenu.addSeparator();
 
             // 退出按钮
             JMenuItem exitMenuItem = new JMenuItem(Res.STR_EXIT);
@@ -113,6 +156,11 @@ public enum TrayManager {
 
             popupMenu.add(exitMenuItem);
         }
+
+
+        // 更新数据
+        showPetMenu.setState(LocalData.instance().showPet);
+
         return popupMenu;
     }
 }

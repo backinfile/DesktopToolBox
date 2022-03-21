@@ -1,5 +1,8 @@
 package com.backinfile.toolBox.actor;
 
+import com.backinfile.support.Time2;
+import com.backinfile.support.Utils;
+import com.backinfile.toolBox.Config;
 import com.backinfile.toolBox.LocalData;
 import com.backinfile.toolBox.Res;
 import com.backinfile.toolBox.Utils2;
@@ -22,6 +25,8 @@ public class Pet extends JDialog implements ActionListener {
     public float eyeOffsetX = 0;
     public float eyeOffsetY = 0;
 
+    private Timer shakeTimer = null;
+
     private final float eyeOffsetDistance;
     private final int move_edge_left = Res.CUBE_SIZE / 2;
     private final int move_edge_right = Res.SCREEN_SIZE.width - Res.CUBE_SIZE / 2;
@@ -35,9 +40,9 @@ public class Pet extends JDialog implements ActionListener {
 
         // 加载时读取上一次位置信息
         if (LocalData.instance().locationX >= 0) {
-            setLocationAlign(LocalData.instance().locationX, LocalData.instance().locationY);
+            setLocationAlignCenter(LocalData.instance().locationX, LocalData.instance().locationY);
         } else {
-            setLocationAlign(Res.SCREEN_SIZE.width / 2, Res.SCREEN_SIZE.height / 2);
+            setLocationAlignCenter(Res.SCREEN_SIZE.width / 2, Res.SCREEN_SIZE.height / 2);
         }
 
         setUndecorated(true);
@@ -45,7 +50,7 @@ public class Pet extends JDialog implements ActionListener {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setType(Type.UTILITY);
         setAlwaysOnTop(true);
-        setVisible(true);
+        setVisible(LocalData.instance().showPet);
 
         eyeOffsetDistance = Res.SCREEN_SIZE.height / 2f;
 
@@ -55,13 +60,13 @@ public class Pet extends JDialog implements ActionListener {
             public void mouseDragged(MouseEvent e) {
                 int x = e.getXOnScreen();
                 int y = e.getYOnScreen();
-                setLocationAlign(Utils2.clamp(x, move_edge_left, move_edge_right), Utils2.clamp(y, move_edge_top, move_edge_bottom));
+                setLocationAlignCenter(Utils2.clamp(x, move_edge_left, move_edge_right), Utils2.clamp(y, move_edge_top, move_edge_bottom));
             }
         });
 
 
         // 更新鼠标
-        new Timer(Res.UpdateTimeUnit, e -> {
+        new Timer(Config.TIME_DELTA, e -> {
             if (isVisible()) {
                 if (updateEyeOffset()) {
                     repaint();
@@ -70,7 +75,42 @@ public class Pet extends JDialog implements ActionListener {
         }).start();
     }
 
-    public void setLocationAlign(int x, int y) {
+    public void setPetVisibleState(boolean curState) {
+        setVisible(curState);
+        LocalData.instance().showPet = curState;
+        LocalData.instance().save();
+    }
+
+
+    public void shake() {
+        if (!isVisible()) {
+            return;
+        }
+        if (shakeTimer == null) {
+            final long endTime = Time2.getCurMillis() + Time2.SEC / 3;
+            final Point startLocation = getLocationOnScreen();
+            shakeTimer = new Timer(Config.TIME_DELTA, e -> {
+                if (Time2.getCurMillis() > endTime || !isVisible()) {
+                    setLocation(startLocation);
+                    shakeTimer.stop();
+                    shakeTimer = null;
+                } else {
+                    setLocation(getShakePoint(startLocation));
+                }
+            });
+            shakeTimer.start();
+        }
+    }
+
+    private Point getShakePoint(Point point) {
+        final int distance = 3;
+        Point result = new Point(point);
+        result.x += Utils.nextInt(-distance, distance + 1);
+        return result;
+    }
+
+
+    public void setLocationAlignCenter(int x, int y) {
         setLocation(x - getWidth() / 2, y - getHeight() / 2);
 
         LocalData.instance().locationX = x;

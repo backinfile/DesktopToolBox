@@ -1,6 +1,7 @@
 package com.backinfile.toolBox;
 
 
+import com.alibaba.fastjson.parser.ParserConfig;
 import com.backinfile.toolBox.actor.Pet;
 import com.backinfile.toolBox.tray.TrayManager;
 
@@ -10,6 +11,8 @@ import java.util.Properties;
 public class DesktopLauncher {
 
     public static void main(String[] args) {
+        ParserConfig.getGlobalInstance().setSafeMode(true);
+
         // 初始化资源
         Res.init();
 

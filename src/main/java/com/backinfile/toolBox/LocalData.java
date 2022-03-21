@@ -22,6 +22,7 @@ public class LocalData {
     // 需要保存的数据
     public int locationX = -1;
     public int locationY = -1;
+    public boolean showPet = true;
 
 
     // 其他数据

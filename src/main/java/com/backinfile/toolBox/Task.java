@@ -18,7 +18,7 @@ public class Task {
     private static void runTimerQueue() {
         while (true) {
             timerQueue.update();
-            Utils.sleep(Res.UpdateTimeUnit);
+            Utils.sleep(Config.TIME_DELTA);
         }
     }
 
