@@ -95,6 +95,7 @@ public class FileServer {
                 }
             }
         }
+        log("已关闭");
     }
 
     private void handle(Socket client, Request request, Response response) {
