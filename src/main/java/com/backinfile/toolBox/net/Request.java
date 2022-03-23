@@ -35,8 +35,9 @@ public class Request {
                 }
             }
         } catch (IOException e) {
-            Log.game.error("", e);
+            Log.game.error(e.getMessage());
         }
+
     }
 
     public String getUrl() {

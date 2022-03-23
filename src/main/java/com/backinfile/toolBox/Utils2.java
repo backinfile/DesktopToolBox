@@ -106,4 +106,22 @@ public class Utils2 {
         }
         return true;
     }
+
+    private static final long KB = 1024;
+    private static final long MB = KB * 1024;
+    private static final long GB = MB * 1024;
+
+    public static String getFileSize(File file) {
+        long length = file.length();
+        if (length < KB) {
+            return length + "B";
+        }
+        if (length < MB) {
+            return String.format("%.2fKB", (length / KB + (length % KB) * 1f / KB));
+        }
+        if (length < GB) {
+            return String.format("%.2fMB", (length / MB + (length % MB) * 1f / MB));
+        }
+        return String.format("%.2fGB", (length / GB + (length % GB) * 1f / GB));
+    }
 }

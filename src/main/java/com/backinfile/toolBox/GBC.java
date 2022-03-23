@@ -1,4 +1,4 @@
-package com.backinfile.toolBox.manager;
+package com.backinfile.toolBox;
 
 import java.awt.*;
 

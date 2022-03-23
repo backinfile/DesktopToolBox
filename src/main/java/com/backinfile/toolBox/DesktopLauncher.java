@@ -32,7 +32,7 @@ public class DesktopLauncher {
         new Pet();
 
         // 显示托盘
-        TrayManager.Instance.show();
+        TrayManager.show();
     }
 
 }

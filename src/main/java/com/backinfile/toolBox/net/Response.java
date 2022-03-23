@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class Response {
@@ -46,7 +47,7 @@ public class Response {
         try (FileInputStream inputStream = new FileInputStream(file)) {
 //            String contentType = Files.probeContentType(file.toPath());
             setHeaders("Content-Type", "application/force-download");
-            setHeaders("Content-Disposition", "attachment;filename=" + file.getName());
+            setHeaders("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(file.getName(), "UTF-8") + "\"");
             setHeaders("Content-Length", String.valueOf(inputStream.available()));
 
             // 写入头

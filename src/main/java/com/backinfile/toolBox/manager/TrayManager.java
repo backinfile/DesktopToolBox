@@ -12,20 +12,19 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public enum TrayManager {
-    Instance;
+public class TrayManager {
 
-    private JDialog hideDialog = null;
-    private TrayIcon trayIcon = null;
+    private static JDialog hideDialog = null;
+    private static TrayIcon trayIcon = null;
 
-    private Timer winkTimer = null;
-    private boolean winking = false;
+    private static Timer winkTimer = null;
+    private static boolean winking = false;
 
 
-    private JPopupMenu popupMenu = null;
-    private JCheckBoxMenuItem showPetMenu = null;
+    private static JPopupMenu popupMenu = null;
+    private static JCheckBoxMenuItem showPetMenu = null;
 
-    public void show() {
+    public static void show() {
         Log.game.info("show Tray");
 
         SystemTray tray = SystemTray.getSystemTray();
@@ -53,7 +52,7 @@ public enum TrayManager {
         }
     }
 
-    public void wink(boolean wink) {
+    public static void wink(boolean wink) {
         winking = wink;
 
         if (winking && winkTimer == null) {
@@ -73,7 +72,7 @@ public enum TrayManager {
         }
     }
 
-    public JDialog getHideDialog() {
+    public static JDialog getHideDialog() {
         if (hideDialog != null) {
             hideDialog.setVisible(false);
             hideDialog.dispose();
@@ -87,7 +86,7 @@ public enum TrayManager {
         return hideDialog;
     }
 
-    private JPopupMenu getPopupMenu() {
+    private static JPopupMenu getPopupMenu() {
         if (popupMenu == null) {
             popupMenu = new JPopupMenu();
 
@@ -120,7 +119,7 @@ public enum TrayManager {
                 {
                     JMenuItem item = new JMenuItem("文件共享");
                     item.addActionListener(e -> {
-                        FileServerManager.Instance.open();
+                        FileServerManager.openWindow();
                     });
                     popupMenu.add(item);
 
