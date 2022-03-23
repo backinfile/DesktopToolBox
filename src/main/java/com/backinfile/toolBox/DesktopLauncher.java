@@ -3,7 +3,7 @@ package com.backinfile.toolBox;
 
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.backinfile.toolBox.actor.Pet;
-import com.backinfile.toolBox.tray.TrayManager;
+import com.backinfile.toolBox.manager.TrayManager;
 
 import javax.swing.*;
 import java.util.Properties;
@@ -20,7 +20,7 @@ public class DesktopLauncher {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.game.error("", e);
         }
 
         Properties properties = System.getProperties();

@@ -1,4 +1,4 @@
-package com.backinfile.toolBox.tray;
+package com.backinfile.toolBox.manager;
 
 import com.backinfile.support.Time2;
 import com.backinfile.toolBox.LocalData;
@@ -116,6 +116,16 @@ public enum TrayManager {
 
             // 工具
             {
+                // 文件共享
+                {
+                    JMenuItem item = new JMenuItem("文件共享");
+                    item.addActionListener(e -> {
+                        FileServerManager.Instance.open();
+                    });
+                    popupMenu.add(item);
+
+                }
+
                 // 系统工具
                 {
                     String[] systemTools = new String[]{

@@ -92,4 +92,18 @@ public class Utils2 {
         return value;
     }
 
+    public static boolean isFileOk(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+        if (!file.canRead()) {
+            return false;
+        }
+        if (!file.isDirectory()) {
+            if (file.isHidden()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

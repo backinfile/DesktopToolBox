@@ -2,6 +2,7 @@ package com.backinfile.toolBox.net;
 
 import com.backinfile.toolBox.Config;
 import com.backinfile.toolBox.Log;
+import com.backinfile.toolBox.Utils2;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,6 @@ public enum FileServer {
     private Thread fileServerThread;
     private ServerSocket socket;
     private String path;
-    private volatile boolean threadAbort = false;
 
     public String start(String path) {
         File file = new File(path);
@@ -27,6 +27,10 @@ public enum FileServer {
             return "权限不足";
         }
         this.path = path;
+
+        if (socket != null) {
+            stop();
+        }
 
         try {
             socket = new ServerSocket(Config.FILE_SERVER_PORT);
@@ -74,25 +78,10 @@ public enum FileServer {
         }
     }
 
-    private static boolean isFileOk(File file) {
-        if (!file.exists()) {
-            return false;
-        }
-        if (!file.canRead()) {
-            return false;
-        }
-        if (!file.isDirectory()) {
-            if (file.isHidden()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void handle(Request request, Response response) {
         Log.game.info("handle request url:{}", request.getUrl());
         File file = new File(path, request.getUrl());
-        if (!"GET".equalsIgnoreCase(request.getMethod()) || !isFileOk(file) || request.getUrl().contains("..")) {
+        if (!"GET".equalsIgnoreCase(request.getMethod()) || !Utils2.isFileOk(file) || request.getUrl().contains("..")) {
             response.setStatus(404).send("");
             Log.game.info("response 404");
             return;
@@ -103,7 +92,7 @@ public enum FileServer {
             File[] list = file.listFiles();
             if (list != null) {
                 for (File fileInDir : list) {
-                    if (isFileOk(fileInDir)) {
+                    if (Utils2.isFileOk(fileInDir)) {
                         String name = fileInDir.getName();
                         nameToURLMap.put(name, fileInDir.isDirectory());
                     }
