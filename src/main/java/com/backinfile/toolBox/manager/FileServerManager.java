@@ -7,6 +7,7 @@ import com.backinfile.toolBox.actor.FileServerView;
 import com.backinfile.toolBox.net.FileServer;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class FileServerManager {
     private static FileServerView fileServerView;
@@ -15,8 +16,9 @@ public class FileServerManager {
     public static void openWindow() {
         if (fileServerView == null) {
             fileServerView = new FileServerView();
+            fileServerView.setLocation(Res.SCREEN_SIZE.width / 2 - fileServerView.getWidth() / 2, Res.SCREEN_SIZE.height / 2 - fileServerView.getHeight() / 2);
         }
-        fileServerView.setLocation(Res.SCREEN_SIZE.width / 2 - fileServerView.getWidth() / 2, Res.SCREEN_SIZE.height / 2 - fileServerView.getHeight() / 2);
+        fileServerView.setState(Frame.NORMAL);
         fileServerView.setVisible(true);
         fileServerView.toFront();
     }

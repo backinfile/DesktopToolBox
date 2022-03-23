@@ -35,7 +35,7 @@ public class Pet extends JDialog implements ActionListener {
 
     public Pet() {
         instance = this;
-
+        setTitle(Res.PROJ_NAME);
         setSize(Res.CUBE_SIZE, Res.CUBE_SIZE);
 
         // 加载时读取上一次位置信息

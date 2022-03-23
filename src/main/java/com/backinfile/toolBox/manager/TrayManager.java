@@ -151,6 +151,11 @@ public class TrayManager {
             }
             popupMenu.addSeparator();
 
+            //  关于
+            {
+
+            }
+
             // 退出按钮
             JMenuItem exitMenuItem = new JMenuItem(Res.STR_EXIT);
             exitMenuItem.addActionListener(e -> {

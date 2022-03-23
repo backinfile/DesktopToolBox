@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class Response {
@@ -35,7 +36,7 @@ public class Response {
                 dataBuilder.append(key).append(": ").append(this.headers.get(key)).append("\n");
             }
             dataBuilder.append("\n").append(data);
-            outputStream.write(dataBuilder.toString().getBytes());
+            outputStream.write(dataBuilder.toString().getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
